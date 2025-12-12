@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lesetraining – Lücken füllen (au/ei/eu)</title>
+<title>Lesetraining – Lücke füllen (au/ei/eu)</title>
 <style>
   :root{
     font-family: "Comic Sans MS","Segoe UI",system-ui,sans-serif;
@@ -25,42 +25,66 @@
     border-radius: 20px;
     box-shadow: 0 14px 40px rgba(0,0,0,0.10);
     padding: 1.7rem 2rem;
-    max-width: 860px;
+    max-width: 900px;
     width: 100%;
     box-sizing:border-box;
   }
-
   header{
     display:flex;
     gap:12px;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
     flex-wrap:wrap;
     margin-bottom:.6rem;
   }
   h1{ margin:0; font-size:1.65rem; }
-  .subtitle{ margin:.2rem 0 1rem 0; color:#4b5563; line-height:1.35; }
+  .subtitle{ margin:.2rem 0 1rem 0; color:#4b5563; line-height:1.35; font-weight:800; }
 
   .card{
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.86);
     border: 1px solid rgba(199,210,254,0.7);
     border-radius: 16px;
     padding: 14px;
     box-shadow: 0 10px 26px rgba(0,0,0,0.06);
   }
-
   .hidden{ display:none; }
   .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .row > *{ flex: 0 0 auto; }
 
-  label{ font-weight:800; color:#374151; }
+  .big-label{
+    font-weight:1000;
+    color:#111827;
+    font-size:1.05rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
   input[type="text"]{
     padding:.65rem .8rem;
-    border-radius: 12px;
-    border: 2px solid #c7d2fe;
+    border-radius: 14px;
+    border: 3px solid #c7d2fe;
     outline:none;
-    font-weight:800;
+    font-weight:1000;
+    font-size:1.05rem;
     min-width: 210px;
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:.55rem .7rem;
+    border-radius:999px;
+    border: 2px solid #c7d2fe;
+    background:#eef2ff;
+    font-weight:1000;
+  }
+  .pill select{
+    border:none;
+    background:transparent;
+    font-weight:1000;
+    cursor:pointer;
+    outline:none;
   }
 
   .mode-grid{
@@ -72,14 +96,13 @@
   @media (min-width: 820px){
     .mode-grid{ grid-template-columns: repeat(5, minmax(0,1fr)); }
   }
-
   .mode-btn{
-    padding: .8rem .65rem;
+    padding: .85rem .65rem;
     border-radius: 16px;
     border: 2px solid #d1d5db;
     background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
-    font-size: .92rem;
-    font-weight: 900;
+    font-size: .98rem;
+    font-weight: 1000;
     cursor:pointer;
     transition: transform .05s ease, box-shadow .15s ease, border-color .15s ease;
   }
@@ -95,33 +118,15 @@
   }
   .mode-btn:active{ transform: translateY(1px); }
 
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:.55rem .7rem;
-    border-radius:999px;
-    border: 2px solid #c7d2fe;
-    background:#eef2ff;
-    font-weight:900;
-  }
-  .pill select{
-    border:none;
-    background:transparent;
-    font-weight:900;
-    cursor:pointer;
-    outline:none;
-  }
-
   .primary-btn{
-    padding:.75rem 1.1rem;
-    font-size:1.02rem;
+    padding:.82rem 1.15rem;
+    font-size:1.08rem;
     border-radius:999px;
     border:none;
     cursor:pointer;
     background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
     color:#fff;
-    font-weight:900;
+    font-weight:1000;
     box-shadow: 0 10px 22px rgba(37,99,235,0.22);
     transition: transform .05s ease, filter .15s ease;
   }
@@ -130,54 +135,51 @@
   .primary-btn:disabled{ background:#9ca3af; box-shadow:none; cursor:not-allowed; }
 
   .ghost-btn{
-    padding:.72rem 1rem;
+    padding:.78rem 1rem;
     font-size:1rem;
     border-radius:999px;
     border: 2px solid #c7d2fe;
     background:#ffffff;
     cursor:pointer;
-    font-weight:900;
+    font-weight:1000;
   }
   .ghost-btn:hover{ background:#eef2ff; }
 
   .danger-btn{
-    padding:.72rem 1rem;
+    padding:.78rem 1rem;
     font-size:1rem;
     border-radius:999px;
     border: 2px solid #fecaca;
     background:#fff;
     cursor:pointer;
-    font-weight:900;
+    font-weight:1000;
   }
   .danger-btn:hover{ background:#fef2f2; }
 
   /* Quiz */
-  .quiz{
-    text-align:center;
-    margin-top: 10px;
-  }
+  .quiz{ text-align:center; margin-top: 10px; }
   .word{
     font-family: "Comic Sans MS", sans-serif;
-    font-size: 3.05rem;
+    font-size: 3.1rem;
     letter-spacing: 0.16em;
     margin: .7rem 0 .45rem;
     user-select:none;
   }
   .pattern-info{
-    font-size: .98rem;
-    color:#6b7280;
+    font-size: 1.02rem;
+    color:#374151;
     margin-bottom:.7rem;
-    font-weight:800;
+    font-weight:1000;
   }
   #speak-btn{
-    padding:.62rem 1rem;
-    font-size:1rem;
-    border-radius:14px;
+    padding:.72rem 1rem;
+    font-size:1.05rem;
+    border-radius:16px;
     cursor:pointer;
-    border: 2px solid #c7d2fe;
+    border: 3px solid #c7d2fe;
     background: #eef2ff;
     margin-bottom:.55rem;
-    font-weight:900;
+    font-weight:1000;
   }
   #speak-btn:hover{ background:#e0e7ff; }
 
@@ -186,61 +188,64 @@
     display:grid;
     grid-template-columns: repeat(3, 1fr);
     gap:.65rem;
-    max-width: 520px;
+    max-width: 560px;
     margin-left:auto;
     margin-right:auto;
   }
   .letter-btn{
     font-family: "Comic Sans MS", sans-serif;
-    padding: .85rem .6rem;
-    border-radius: 14px;
+    padding: .9rem .7rem;
+    border-radius: 18px;
     background: linear-gradient(180deg, #e0f2fe 0%, #e0e7ff 100%);
-    border: 2px solid #c7d2fe;
+    border: 3px solid #c7d2fe;
     cursor:pointer;
-    font-size: 1.55rem;
-    font-weight: 900;
+    font-size: 1.6rem;
+    font-weight: 1000;
+    line-height:1.05;
   }
   .letter-btn:hover{ filter: brightness(1.03); }
   .letter-btn:disabled{ opacity:.55; cursor:default; }
 
+  .btn-sub{
+    display:block;
+    font-size: 1.02rem;
+    font-weight: 1000;
+    margin-top: .25rem;
+    opacity: .92;
+  }
+  .red{ color:#dc2626; font-weight:1000; }
+
   .feedback{
     min-height:1.6rem;
-    font-size:1.2rem;
-    margin-top:.85rem;
+    font-size:1.25rem;
+    margin-top:.9rem;
     font-weight:1000;
   }
   .ok{ color:#15803d; }
   .err{ color:#b91c1c; }
 
   .stats{
-    margin-top:.3rem;
-    font-size:.95rem;
-    color:#374151;
-    font-weight:900;
+    margin-top:.35rem;
+    font-size:1rem;
+    color:#111827;
+    font-weight:1000;
   }
 
-  .report{
-    margin-top: 10px;
-    text-align:left;
+  textarea{
+    width:100%;
+    min-height: 260px;
+    border-radius: 14px;
+    border: 2px solid #c7d2fe;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: .92rem;
+    box-sizing:border-box;
   }
-  .report h2{ margin:.2rem 0 .6rem 0; font-size:1.15rem; }
   .small{
     color:#6b7280;
-    font-weight:800;
-    font-size:.92rem;
+    font-weight:900;
+    font-size:.95rem;
     line-height:1.35;
-  }
-  pre{
-    white-space: pre-wrap;
-    word-break: break-word;
-    background:#0b1220;
-    color:#e5e7eb;
-    padding: 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(199,210,254,0.2);
-    max-height: 280px;
-    overflow:auto;
-    font-size:.9rem;
   }
 </style>
 </head>
@@ -250,7 +255,7 @@
   <header>
     <div>
       <h1>Lesetraining (au / ei / eu)</h1>
-      <div class="subtitle">Hör zu, fülle die Lücke und wähle die richtige Lösung (immer 3 Buttons).</div>
+      <div class="subtitle">Hör zu 👂 – fülle die Lücke – klick die richtige Karte.</div>
     </div>
     <div class="row">
       <span class="pill">
@@ -287,11 +292,17 @@
   <div id="start-screen" class="card">
     <div class="row" style="justify-content:space-between;">
       <div class="row">
-        <label for="child-name">Name:</label>
+        <div class="big-label">👤 Name:</div>
         <input id="child-name" type="text" placeholder="z.B. Mia" maxlength="24" />
       </div>
+
       <div class="row">
-        <button id="load-last-btn" class="ghost-btn" type="button">Letztes Kind laden</button>
+        <span class="pill" title="Stimme (Browser)">
+          <span>🗣️ Stimme:</span>
+          <select id="voice-select" aria-label="Stimme">
+            <option value="">(lädt…)</option>
+          </select>
+        </span>
       </div>
     </div>
 
@@ -300,18 +311,19 @@
       <button type="button" class="mode-btn" data-mode="end">2) Ende</button>
       <button type="button" class="mode-btn" data-mode="vowel">3) Vokale</button>
       <button type="button" class="mode-btn" data-mode="cons">4) Konson.</button>
-      <button type="button" class="mode-btn" data-mode="diph">5) Diphth.</button>
+      <button type="button" class="mode-btn" data-mode="diph">5) au/ei/eu</button>
     </div>
 
     <div class="small" id="start-info">Bitte Name eintragen und Modus wählen.</div>
 
     <div class="row" style="margin-top:10px;">
-      <button id="start-btn" class="primary-btn" disabled type="button">Los geht's!</button>
-      <button id="reset-history-btn" class="danger-btn" type="button">Diagnose löschen</button>
+      <button id="start-btn" class="primary-btn" disabled type="button">▶️ Start</button>
+      <button id="load-last-btn" class="ghost-btn" type="button">👤 letztes Kind</button>
+      <button id="reset-history-btn" class="danger-btn" type="button">🧹 Diagnose löschen</button>
     </div>
 
     <div class="small" style="margin-top:10px;">
-      Diagnose: Fehler werden pro Kind gespeichert (localStorage). Export als JSON/CSV am Ende.
+      Am Ende bekommst du einen Text-Report zum Kopieren (Diagnose wird pro Kind gespeichert).
     </div>
   </div>
 
@@ -320,13 +332,13 @@
     <div class="row" style="justify-content:space-between;">
       <div class="small" id="whoami">Kind: –</div>
       <div class="row">
-        <button id="abort-btn" class="danger-btn" type="button">Spiel beenden</button>
+        <button id="abort-btn" class="danger-btn" type="button">⏹ Spiel beenden</button>
       </div>
     </div>
 
     <div class="quiz">
       <div class="word" id="word-display">_</div>
-      <button id="speak-btn" type="button">🔊 Noch einmal hören</button>
+      <button id="speak-btn" type="button">🔊 Nochmal hören</button>
       <div class="pattern-info" id="pattern-info"></div>
 
       <div class="letters" id="letters"></div>
@@ -338,15 +350,17 @@
     </div>
 
     <!-- REPORT -->
-    <div id="report" class="report hidden">
-      <h2>Report & Export</h2>
-      <div class="row" style="margin-bottom:8px;">
-        <button id="download-json" class="ghost-btn" type="button">JSON herunterladen</button>
-        <button id="download-csv" class="ghost-btn" type="button">CSV herunterladen</button>
-        <button id="copy-json" class="ghost-btn" type="button">JSON kopieren</button>
+    <div id="report" class="hidden" style="margin-top:12px;">
+      <div class="row" style="justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div style="font-weight:1000; font-size:1.1rem;">📋 Auswertung (kopieren)</div>
+          <div class="small">Klick auf „Kopieren“ und füge den Text in LearningView / Mail / Notizen ein.</div>
+        </div>
+        <div class="row">
+          <button id="copy-report" class="ghost-btn" type="button">📋 Kopieren</button>
+        </div>
       </div>
-      <div class="small">Vorschau:</div>
-      <pre id="report-preview"></pre>
+      <textarea id="report-text" readonly></textarea>
     </div>
   </div>
 </div>
@@ -355,7 +369,6 @@
 /* =========================================================
    WORTLISTEN: NUR aus dem Chat (unverändert)
    ========================================================= */
-
 const WOERTER_AU = [
   "Auto","Auge","auch","aus","auf","Haus","Maus","Baum","Zaun","Bauch",
   "Faust","Pause","Kauf","laut","Laub","Tau","Sau","Haut","Sauer","Traum",
@@ -375,11 +388,8 @@ const WOERTER_EI = [
 ];
 
 /* =========================================================
-   APP-SETUP
+   DOM
    ========================================================= */
-
-const DEFAULT_TARGET = 20;
-
 const modeGrid = document.getElementById("mode-grid");
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
@@ -394,6 +404,8 @@ const filterSelect = document.getElementById("filter-select");
 const pauseSelect = document.getElementById("pause-select");
 const targetSelect = document.getElementById("target-select");
 
+const voiceSelect = document.getElementById("voice-select");
+
 const whoami = document.getElementById("whoami");
 const abortBtn = document.getElementById("abort-btn");
 
@@ -406,39 +418,29 @@ const stats = document.getElementById("stats");
 const finishBtn = document.getElementById("finish-btn");
 
 const reportWrap = document.getElementById("report");
-const reportPreview = document.getElementById("report-preview");
-const downloadJsonBtn = document.getElementById("download-json");
-const downloadCsvBtn = document.getElementById("download-csv");
-const copyJsonBtn = document.getElementById("copy-json");
+const reportText = document.getElementById("report-text");
+const copyReportBtn = document.getElementById("copy-report");
 
 /* =========================================================
-   Diagnose (localStorage)
+   localStorage Keys
    ========================================================= */
-
 const LS_KEY_LAST_CHILD = "lt_last_child";
-const LS_KEY_PREFIX = "lt_history_"; // + childName
+const LS_KEY_PREFIX = "lt_history_";
+const LS_KEY_VOICE = "lt_voice_uri";
 
-function getChildKey(name){
-  return LS_KEY_PREFIX + name.trim().toLowerCase();
-}
+function getChildKey(name){ return LS_KEY_PREFIX + name.trim().toLowerCase(); }
 
 function loadHistory(name){
   const key = getChildKey(name);
   try{
-    return JSON.parse(localStorage.getItem(key) || "null") || {
-      child: name,
-      sessions: []
-    };
+    return JSON.parse(localStorage.getItem(key) || "null") || { child: name, sessions: [] };
   }catch(e){
     return { child:name, sessions:[] };
   }
 }
-
 function saveHistory(name, history){
-  const key = getChildKey(name);
-  localStorage.setItem(key, JSON.stringify(history));
+  localStorage.setItem(getChildKey(name), JSON.stringify(history));
 }
-
 function resetHistory(name){
   if(!name) return;
   localStorage.removeItem(getChildKey(name));
@@ -447,16 +449,13 @@ function resetHistory(name){
 /* =========================================================
    Wörter-Quelle (nur diese 3 Listen!)
    ========================================================= */
-
 function buildAllWords(){
-  const all = [
+  return [
     ...WOERTER_AU.map(w => ({ w, diph: "au" })),
     ...WOERTER_EU.map(w => ({ w, diph: "eu" })),
     ...WOERTER_EI.map(w => ({ w, diph: "ei" }))
   ];
-  return all;
 }
-
 function applyFilter(all, filter){
   if(filter === "au") return all.filter(x => x.diph === "au");
   if(filter === "ei") return all.filter(x => x.diph === "ei");
@@ -464,88 +463,194 @@ function applyFilter(all, filter){
   return all;
 }
 
+/* Diphthong-Beispiele (aus DEINEN Listen) */
+const EXAMPLE_FOR = {
+  au: "Haus",
+  ei: "Seife",
+  eu: "Eule"
+};
+
 /* =========================================================
-   Spiel-State
+   Buchstaben-Checks
    ========================================================= */
-
-let mode = null;                 // start|end|vowel|cons|diph
-let session = null;              // aktuelle Sessiondaten
-let current = null;              // aktuelle Aufgabe
-let freeze = false;
-
-function nowIso(){
-  return new Date().toISOString();
-}
-
-function isNounByCasing(word){
-  // Keine neuen Daten erlaubt -> Heuristik: Gross am Anfang => Nomen (oder Eigennamen/Anfang).
-  // Nutzt nur die vorhandenen Wort-Strings.
-  return /^[A-ZÄÖÜ]/.test(word);
-}
-
-/* Vokale: inkl. Umlautvokale (wegen Bäuerin/Häuser/Räuber/Zäune) */
+function toLowerSafe(s){ return (s || "").toLowerCase(); }
 const VOWELS = new Set(["a","e","i","o","u","ä","ö","ü"]);
 const LETTERS = "abcdefghijklmnopqrstuvwxyzäöüß".split("");
-
-function toLowerSafe(s){ return (s || "").toLowerCase(); }
-
-function isLetter(ch){
-  return LETTERS.includes(ch);
-}
-
-function isVowel(ch){
-  return VOWELS.has(ch);
-}
-
-function isConsonant(ch){
-  return isLetter(ch) && !isVowel(ch);
-}
-
-/* =========================================================
-   Speech (KI im Browser)
-   ========================================================= */
-
-function speak(text){
-  try{ speechSynthesis.cancel(); }catch(e){}
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "de-DE";
-  u.rate = 0.78;
-  speechSynthesis.speak(u);
-}
-
-/* =========================================================
-   Aufgaben erzeugen (immer 3 Buttons)
-   ========================================================= */
+function isLetter(ch){ return LETTERS.includes(ch); }
+function isVowel(ch){ return VOWELS.has(ch); }
+function isConsonant(ch){ return isLetter(ch) && !isVowel(ch); }
 
 function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 
 function makeTemplateAt(word, index, len=1){
   return word.slice(0,index) + "_" + word.slice(index+len);
 }
-
-function highlightAt(word, index, len=1){
+function highlightAt(word, index, len=1, color="#16a34a"){
   const before = word.slice(0,index);
   const mid = word.slice(index, index+len);
   const after = word.slice(index+len);
-  return `${before}<span style="color:#16a34a;">${mid}</span>${after}`;
+  return `${before}<span style="color:${color}; font-weight:1000;">${mid}</span>${after}`;
 }
 
-function make3Options(correct, kind, nounUpper=false){
-  // kind: "diph" | "vowel" | "cons" | "letter"
+/* =========================================================
+   Voice / TTS (Browser SpeechSynthesis)
+   ========================================================= */
+let selectedVoice = null;
+
+function pickBestDefaultVoice(voices){
+  // bevorzugt de-DE; oft auf Windows/Edge "Microsoft Katja/Conrad", auf Chrome "Google Deutsch"
+  const de = voices.filter(v => (v.lang || "").toLowerCase().startsWith("de"));
+  if(!de.length) return voices[0] || null;
+
+  const preferred = [
+    "microsoft katja",
+    "microsoft conrad",
+    "google deutsch",
+    "anna",
+    "helena",
+    "deutsch"
+  ];
+
+  for(const key of preferred){
+    const v = de.find(x => (x.name || "").toLowerCase().includes(key));
+    if(v) return v;
+  }
+  return de[0];
+}
+
+function populateVoices(){
+  const voices = speechSynthesis.getVoices();
+  voiceSelect.innerHTML = "";
+
+  if(!voices.length){
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "(keine Stimmen gefunden)";
+    voiceSelect.appendChild(opt);
+    return;
+  }
+
+  const storedUri = localStorage.getItem(LS_KEY_VOICE) || "";
+  const deSorted = voices
+    .slice()
+    .sort((a,b)=>{
+      const ade = (a.lang||"").toLowerCase().startsWith("de") ? 0 : 1;
+      const bde = (b.lang||"").toLowerCase().startsWith("de") ? 0 : 1;
+      if(ade !== bde) return ade - bde;
+      return (a.name||"").localeCompare(b.name||"");
+    });
+
+  deSorted.forEach(v=>{
+    const opt = document.createElement("option");
+    opt.value = v.voiceURI;
+    opt.textContent = `${v.name} (${v.lang})`;
+    voiceSelect.appendChild(opt);
+  });
+
+  const byUri = (uri)=> voices.find(v => v.voiceURI === uri) || null;
+
+  if(storedUri && byUri(storedUri)){
+    voiceSelect.value = storedUri;
+    selectedVoice = byUri(storedUri);
+  } else {
+    selectedVoice = pickBestDefaultVoice(voices);
+    if(selectedVoice) voiceSelect.value = selectedVoice.voiceURI;
+  }
+}
+
+voiceSelect.addEventListener("change", ()=>{
+  const uri = voiceSelect.value || "";
+  const voices = speechSynthesis.getVoices();
+  selectedVoice = voices.find(v => v.voiceURI === uri) || null;
+  localStorage.setItem(LS_KEY_VOICE, uri);
+  // kurzer Test
+  if(selectedVoice){
+    speakText("Test");
+  }
+});
+
+function speakText(text){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "de-DE";
+  u.rate = 0.78;
+  u.pitch = 1.0;
+  if(selectedVoice) u.voice = selectedVoice;
+  speechSynthesis.speak(u);
+}
+
+/* Voices laden (Browsers sind da zickig) */
+populateVoices();
+if(typeof speechSynthesis !== "undefined"){
+  speechSynthesis.onvoiceschanged = populateVoices;
+}
+
+/* =========================================================
+   Spiel-State
+   ========================================================= */
+let mode = null;       // start|end|vowel|cons|diph
+let session = null;
+let current = null;
+let freeze = false;
+
+function nowIso(){ return new Date().toISOString(); }
+
+function updateStartState(){
+  const nameOk = childNameInput.value.trim().length > 0;
+  const modeOk = !!mode;
+  startBtn.disabled = !(nameOk && modeOk);
+
+  if(!nameOk && !modeOk) startInfo.textContent = "👤 Name eingeben + Modus wählen.";
+  else if(!nameOk) startInfo.textContent = "👤 Bitte Name eingeben.";
+  else if(!modeOk) startInfo.textContent = "Bitte Modus wählen.";
+  else startInfo.textContent = "Bereit. ▶️ Start!";
+}
+
+/* Moduswahl */
+modeGrid.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const m = btn.dataset.mode;
+    mode = (mode === m) ? null : m;
+    modeGrid.querySelectorAll(".mode-btn").forEach(b=>{
+      b.classList.toggle("selected", b.dataset.mode === mode);
+    });
+    updateStartState();
+  });
+});
+
+childNameInput.addEventListener("input", updateStartState);
+
+loadLastBtn.addEventListener("click", ()=>{
+  const last = localStorage.getItem(LS_KEY_LAST_CHILD);
+  if(last){
+    childNameInput.value = last;
+    updateStartState();
+  }
+});
+
+resetHistoryBtn.addEventListener("click", ()=>{
+  const name = childNameInput.value.trim();
+  if(!name) return;
+  resetHistory(name);
+  alert("Diagnose gelöscht für: " + name);
+});
+
+/* =========================================================
+   Aufgaben erzeugen (3 Buttons)
+   ========================================================= */
+function make3Options(correct, kind){
   let pool = [];
 
   if(kind === "diph"){
-    pool = ["au","ei","eu"].filter(x => x !== correct);
+    pool = ["eu","au","ei"].filter(x => x !== correct);
   } else if(kind === "vowel"){
-    pool = ["a","e","i","o","u"].filter(x => x !== correct); // Buttons ohne Umlaute (kindgerechter)
+    // Buttons kindgerecht: nur a/e/i/o/u als Auswahl
+    pool = ["a","e","i","o","u"].filter(x => x !== correct);
   } else if(kind === "cons"){
     pool = LETTERS.filter(ch => isConsonant(ch) && ch !== correct);
   } else {
-    if(isVowel(correct)){
-      pool = ["a","e","i","o","u"].filter(x => x !== correct);
-    }else{
-      pool = LETTERS.filter(ch => isConsonant(ch) && ch !== correct);
-    }
+    if(isVowel(correct)) pool = ["a","e","i","o","u"].filter(x => x !== correct);
+    else pool = LETTERS.filter(ch => isConsonant(ch) && ch !== correct);
   }
 
   const raw = [correct];
@@ -554,13 +659,28 @@ function make3Options(correct, kind, nounUpper=false){
     if(cand && !raw.includes(cand)) raw.push(cand);
   }
 
-  // Anzeige
-  const shown = raw.map(x => {
-    if(!nounUpper) return x;
-    return (x.length === 1) ? x.toUpperCase() : x; // Diphthong bleibt klein
+  // Anzeige (kindgerecht mit Symbolen)
+  // Diphthong: Button zeigt entweder "au" ODER Beispielwort mit rotem Diphthong.
+  const zipped = raw.map(r=>{
+    if(kind === "diph"){
+      const ex = EXAMPLE_FOR[r];
+      const exLower = toLowerSafe(ex);
+      const idx = exLower.indexOf(r);
+      const exampleHtml = (idx >= 0)
+        ? highlightAt(ex, idx, 2, "#dc2626")
+        : ex;
+      // Karte: oben Symbol + unten Beispiel
+      const html = `<span>🧩 <span style="letter-spacing:.06em;">${r}</span></span>
+                    <span class="btn-sub">${exampleHtml}</span>`;
+      return { raw: r, html };
+    } else {
+      // Buchstaben: sehr einfach, gross
+      const shown = (r.length === 1) ? r.toUpperCase() : r;
+      const html = `<span>${shown}</span>`;
+      return { raw: r, html };
+    }
   });
 
-  const zipped = shown.map((s,i)=>({ shown:s, raw: raw[i] }));
   zipped.sort(()=>Math.random()-0.5);
   return zipped;
 }
@@ -570,8 +690,8 @@ function renderButtons(zipped){
   zipped.forEach(obj=>{
     const btn = document.createElement("button");
     btn.className = "letter-btn";
-    btn.textContent = obj.shown;
     btn.dataset.raw = obj.raw;
+    btn.innerHTML = obj.html; // HTML nötig für rote Buchstaben im Beispiel
     btn.onclick = () => {
       if(freeze) return;
       handleChoice(obj.raw, btn);
@@ -593,40 +713,32 @@ function pickIndexFor(wordLower, want){
 
 function buildTask(allWordsFiltered){
   const item = allWordsFiltered[randInt(0, allWordsFiltered.length-1)];
-  const word = item.w;              // Original (Gross/Klein + Umlaute)
+  const word = item.w;
   const lower = toLowerSafe(word);
-  const noun = isNounByCasing(word);
 
   if(mode === "diph"){
-    const diph = item.diph;         // au/ei/eu
+    const diph = item.diph; // au/ei/eu
     const idx = lower.indexOf(diph);
     if(idx < 0) return null;
-
     return {
-      word,
-      lower,
+      word, lower,
       correct: diph,
-      idx,
-      len: 2,
+      idx, len: 2,
       kind: "diph",
-      nounUpper: false,
       template: makeTemplateAt(word, idx, 2),
-      info: "Wähle den richtigen Diphthong (au / ei / eu)."
+      info: "Wähle: eu / au / ei"
     };
   }
 
   if(mode === "start"){
     const correct = lower[0];
     return {
-      word,
-      lower,
+      word, lower,
       correct,
-      idx: 0,
-      len: 1,
+      idx: 0, len: 1,
       kind: "letter",
-      nounUpper: noun, // Nomen: Buttons gross
       template: makeTemplateAt(word, 0, 1),
-      info: "Wähle den Anfangsbuchstaben."
+      info: "Wähle den Anfang."
     };
   }
 
@@ -634,15 +746,12 @@ function buildTask(allWordsFiltered){
     const idx = lower.length - 1;
     const correct = lower[idx];
     return {
-      word,
-      lower,
+      word, lower,
       correct,
-      idx,
-      len: 1,
+      idx, len: 1,
       kind: "letter",
-      nounUpper: noun, // Nomen: Buttons gross
       template: makeTemplateAt(word, idx, 1),
-      info: "Wähle den Endbuchstaben."
+      info: "Wähle das Ende."
     };
   }
 
@@ -650,18 +759,13 @@ function buildTask(allWordsFiltered){
     const idx = pickIndexFor(lower, "vowel");
     if(idx < 0) return null;
     const correct = lower[idx];
-    // Wenn Umlaut im Wort vorkommt, bleibt korrekter Umlaut korrekt (Button-Pool ohne Umlaut kann dann zu kurz sein)
-    // -> wir zeigen im Button korrekt "ä/ö/ü" falls Ziel so ist; Distraktoren bleiben a/e/i/o/u.
     return {
-      word,
-      lower,
+      word, lower,
       correct,
-      idx,
-      len: 1,
+      idx, len: 1,
       kind: "vowel",
-      nounUpper: false,
       template: makeTemplateAt(word, idx, 1),
-      info: "Wähle den richtigen Vokal."
+      info: "Wähle den Vokal."
     };
   }
 
@@ -670,15 +774,12 @@ function buildTask(allWordsFiltered){
     if(idx < 0) return null;
     const correct = lower[idx];
     return {
-      word,
-      lower,
+      word, lower,
       correct,
-      idx,
-      len: 1,
+      idx, len: 1,
       kind: "cons",
-      nounUpper: false,
       template: makeTemplateAt(word, idx, 1),
-      info: "Wähle den richtigen Konsonanten."
+      info: "Wähle den Konsonant."
     };
   }
 
@@ -686,63 +787,20 @@ function buildTask(allWordsFiltered){
 }
 
 /* =========================================================
-   Flow
+   Start / Loop
    ========================================================= */
-
-function updateStartState(){
-  const nameOk = childNameInput.value.trim().length > 0;
-  const modeOk = !!mode;
-  startBtn.disabled = !(nameOk && modeOk);
-
-  if(!nameOk && !modeOk) startInfo.textContent = "Bitte Name eintragen und Modus wählen.";
-  else if(!nameOk) startInfo.textContent = "Bitte Name eintragen.";
-  else if(!modeOk) startInfo.textContent = "Bitte Modus wählen.";
-  else startInfo.textContent = "Startbereit. Viel Erfolg!";
-}
-
-modeGrid.querySelectorAll(".mode-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const m = btn.dataset.mode;
-    mode = (mode === m) ? null : m;
-    modeGrid.querySelectorAll(".mode-btn").forEach(b=>{
-      b.classList.toggle("selected", b.dataset.mode === mode);
-    });
-    updateStartState();
-  });
-});
-
-childNameInput.addEventListener("input", updateStartState);
-filterSelect.addEventListener("change", ()=>{ /* wirkt ab nächster Aufgabe */ });
-pauseSelect.addEventListener("change", ()=>{ /* wirkt ab nächster Aufgabe */ });
-targetSelect.addEventListener("change", ()=>{ /* wirkt ab nächster Aufgabe */ });
-
-loadLastBtn.addEventListener("click", ()=>{
-  const last = localStorage.getItem(LS_KEY_LAST_CHILD);
-  if(last){
-    childNameInput.value = last;
-    updateStartState();
-  }
-});
-
-resetHistoryBtn.addEventListener("click", ()=>{
-  const name = childNameInput.value.trim();
-  if(!name) return;
-  resetHistory(name);
-  alert("Diagnose gelöscht für: " + name);
-});
-
 startBtn.addEventListener("click", ()=>{
   const child = childNameInput.value.trim();
   if(!child || !mode) return;
 
   localStorage.setItem(LS_KEY_LAST_CHILD, child);
 
-  const target = parseInt(targetSelect.value, 10) || DEFAULT_TARGET;
+  const target = parseInt(targetSelect.value, 10) || 20;
   const pauseMs = parseInt(pauseSelect.value, 10) || 20000;
   const filter = filterSelect.value || "all";
 
   session = {
-    session_id: crypto?.randomUUID?.() || String(Date.now()),
+    session_id: (crypto?.randomUUID?.() || String(Date.now())),
     started_at: nowIso(),
     child,
     mode,
@@ -753,11 +811,11 @@ startBtn.addEventListener("click", ()=>{
     wrong_total: 0,
     wrong_by_button: {},
     wrong_by_word: {},
-    items: [] // {word, template, correct, chosen, ok, ts}
+    items: [] // {ts, word, template, correct, chosen, ok}
   };
 
   // UI
-  whoami.textContent = "Kind: " + child;
+  whoami.textContent = "👤 Kind: " + child;
   reportWrap.classList.add("hidden");
   finishBtn.classList.add("hidden");
   finishBtn.disabled = false;
@@ -765,59 +823,47 @@ startBtn.addEventListener("click", ()=>{
   startScreen.classList.add("hidden");
   quizScreen.classList.remove("hidden");
 
-  stats.textContent = `Richtige Wörter: 0 / ${target}`;
+  stats.textContent = `✅ Richtig: 0 / ${target}`;
   feedback.textContent = "";
   feedback.className = "feedback";
 
   nextItem();
 });
 
-abortBtn.addEventListener("click", ()=>{
-  // Spiel beenden ohne AppSolved
-  endSession(false);
-});
-
-/* =========================================================
-   Item-Loop
-   ========================================================= */
+abortBtn.addEventListener("click", ()=> endSession(false));
 
 function nextItem(){
   freeze = false;
   feedback.textContent = "";
   feedback.className = "feedback";
 
-  const filter = session?.filter || "all";
-  const all = applyFilter(buildAllWords(), filter);
+  const all = applyFilter(buildAllWords(), session.filter);
 
-  // Sicherheits-Schleife, falls selten keine passenden Indizes (z.B. sehr kurze Wörter)
   let tries = 0;
   let task = null;
-  while(tries < 80 && !task){
+  while(tries < 120 && !task){
     task = buildTask(all);
     tries++;
   }
   if(!task){
-    // Notfall: beende Session
     endSession(false);
     return;
   }
 
   current = task;
-
   wordDisplay.textContent = current.template;
   patternInfo.textContent = current.info;
 
-  // vorlesen
-  speak(current.word);
+  // Vorlesen
+  speakText(current.word);
 
-  // Buttons
-  const opts = make3Options(current.correct, current.kind, current.nounUpper);
-  renderButtons(opts);
+  // Buttons (immer 3)
+  renderButtons(make3Options(current.correct, current.kind));
 }
 
 speakBtn.onclick = ()=>{
   if(!current) return;
-  speak(current.word);
+  speakText(current.word);
 };
 
 function handleChoice(chosen, btn){
@@ -825,7 +871,6 @@ function handleChoice(chosen, btn){
 
   const ok = (chosen === current.correct);
 
-  // Log item
   session.items.push({
     ts: nowIso(),
     word: current.word,
@@ -837,103 +882,81 @@ function handleChoice(chosen, btn){
 
   if(ok){
     session.correct++;
-    feedback.textContent = "Richtig! 👍 Lies das Wort.";
+    feedback.textContent = "✅ Richtig!";
     feedback.classList.add("ok");
 
-    // Buttons sperren
     Array.from(lettersDiv.querySelectorAll("button")).forEach(b=>b.disabled=true);
     freeze = true;
 
-    // Grün einblenden
-    wordDisplay.innerHTML = highlightAt(current.word, current.idx, current.len);
+    wordDisplay.innerHTML = highlightAt(current.word, current.idx, current.len, "#16a34a");
+    speakText(current.word);
 
-    // Wort nochmal vorlesen
-    speak(current.word);
+    stats.textContent = `✅ Richtig: ${session.correct} / ${session.target_correct}`;
 
-    const target = session.target_correct;
-    stats.textContent = `Richtige Wörter: ${session.correct} / ${target}`;
-
-    const pauseMs = session.pause_ms || 20000;
-
-    if(session.correct >= target){
-      setTimeout(()=> endSession(true), pauseMs);
-    }else{
-      setTimeout(()=> nextItem(), pauseMs);
+    if(session.correct >= session.target_correct){
+      setTimeout(()=> endSession(true), session.pause_ms);
+    } else {
+      setTimeout(()=> nextItem(), session.pause_ms);
     }
-  }else{
+  } else {
     session.wrong_total++;
-
-    // Diagnose: falscher Button
     session.wrong_by_button[chosen] = (session.wrong_by_button[chosen] || 0) + 1;
-
-    // Diagnose: Wort
     session.wrong_by_word[current.word] = (session.wrong_by_word[current.word] || 0) + 1;
 
-    feedback.textContent = "Versuch es noch einmal.";
+    feedback.textContent = "❌ Nochmals!";
     feedback.classList.remove("ok");
     feedback.classList.add("err");
 
-    // Falscher Button verschwindet (Feature beibehalten)
+    // falscher Button verschwindet
     btn.remove();
   }
 }
 
 /* =========================================================
-   Session-Ende + Export + LearningView
+   Ende + Report (nur Text zum Kopieren)
    ========================================================= */
-
-function buildExportObject(completed){
-  const endedAt = nowIso();
-  const exportObj = {
-    ...session,
-    ended_at: endedAt,
-    completed
-  };
-  return exportObj;
+function topN(obj, n){
+  const arr = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
+  return arr.slice(0,n);
 }
 
-function updateHistoryWithSession(child, exportObj){
-  const history = loadHistory(child);
-  history.child = child;
-  history.sessions.push(exportObj);
-  saveHistory(child, history);
-}
+function buildReportText(completed){
+  const lines = [];
+  lines.push("LESEN / LUECKEN-TRAINING – REPORT");
+  lines.push("--------------------------------");
+  lines.push(`Kind: ${session.child}`);
+  lines.push(`Datum: ${new Date().toLocaleString("de-CH")}`);
+  lines.push(`Modus: ${session.mode}`);
+  lines.push(`Filter: ${session.filter}`);
+  lines.push(`Ziel: ${session.target_correct}`);
+  lines.push(`Richtig: ${session.correct}`);
+  lines.push(`Fehler: ${session.wrong_total}`);
+  lines.push("");
 
-function toCSV(exportObj){
-  // Pro Item eine Zeile
-  const header = ["ts","child","mode","filter","word","template","correct","chosen","ok"].join(",");
-  const rows = exportObj.items.map(it => [
-    it.ts,
-    safeCsv(exportObj.child),
-    exportObj.mode,
-    exportObj.filter,
-    safeCsv(it.word),
-    safeCsv(it.template),
-    safeCsv(it.correct),
-    safeCsv(it.chosen),
-    it.ok ? "1" : "0"
-  ].join(","));
-  return [header, ...rows].join("\n");
-}
+  lines.push("Haeufige falsche Buttons:");
+  const topBtn = topN(session.wrong_by_button, 10);
+  if(!topBtn.length) lines.push("  (keine)");
+  else topBtn.forEach(([k,v])=>lines.push(`  - ${k}: ${v}`));
+  lines.push("");
 
-function safeCsv(v){
-  const s = String(v ?? "");
-  if(/[",\n]/.test(s)){
-    return `"${s.replaceAll('"','""')}"`;
-  }
-  return s;
-}
+  lines.push("Haeufige Fehler-Woerter:");
+  const topW = topN(session.wrong_by_word, 10);
+  if(!topW.length) lines.push("  (keine)");
+  else topW.forEach(([k,v])=>lines.push(`  - ${k}: ${v}`));
+  lines.push("");
 
-function downloadText(filename, text, mime){
-  const blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 500);
+  lines.push("Detail (letzte 30 Versuche):");
+  const last = session.items.slice(-30);
+  last.forEach(it=>{
+    lines.push(`  ${it.ok ? "OK " : "NO "}  Wort: ${it.word} | Luecke: ${it.template} | korrekt: ${it.correct} | gewaehlt: ${it.chosen}`);
+  });
+  lines.push("");
+
+  lines.push("Hinweis:");
+  lines.push(completed
+    ? "  Spiel erfolgreich beendet. (LearningView: AppSolved wird gesendet)"
+    : "  Spiel beendet ohne Erfolg. (Kein AppSolved)");
+  return lines.join("\n");
 }
 
 function endSession(completed){
@@ -941,69 +964,56 @@ function endSession(completed){
   lettersDiv.innerHTML = "";
   patternInfo.textContent = "";
 
-  const exportObj = buildExportObject(completed);
-  updateHistoryWithSession(exportObj.child, exportObj);
+  // History speichern
+  const history = loadHistory(session.child);
+  history.child = session.child;
+  history.sessions.push({ ...session, ended_at: nowIso(), completed });
+  saveHistory(session.child, history);
 
   if(completed){
-    feedback.textContent = "Super gemacht! 🎉";
+    feedback.textContent = "🎉 Super!";
     feedback.classList.remove("err");
     feedback.classList.add("ok");
-    wordDisplay.textContent = "Toll gearbeitet!";
-
+    wordDisplay.textContent = "Fertig!";
     finishBtn.classList.remove("hidden");
     finishBtn.disabled = false;
-    finishBtn.textContent = "Fertig ✔";
 
     finishBtn.onclick = ()=>{
       finishBtn.disabled = true;
-      finishBtn.textContent = "Erledigt ✔";
-      // LearningView Feedback NUR bei completed
       try{
         if(window.parent && window.parent !== window){
           window.parent.postMessage("AppSolved","*");
         }
-      }catch(e){
-        console.warn("LearningView-AppSolved nicht möglich:", e);
-      }
-      showReport(exportObj);
+      }catch(e){}
+      showReport(completed);
     };
-  }else{
-    feedback.textContent = "Spiel beendet.";
+  } else {
+    feedback.textContent = "⏹ Beendet.";
     feedback.classList.remove("ok");
     feedback.classList.add("err");
     wordDisplay.textContent = "Bis bald!";
-    showReport(exportObj);
+    showReport(completed);
   }
 }
 
-function showReport(exportObj){
+function showReport(completed){
   reportWrap.classList.remove("hidden");
-  const preview = JSON.stringify(exportObj, null, 2);
-  reportPreview.textContent = preview;
-
-  downloadJsonBtn.onclick = ()=>{
-    const fn = `lesetraining_${exportObj.child}_${exportObj.mode}_${exportObj.session_id}.json`;
-    downloadText(fn, preview, "application/json;charset=utf-8");
-  };
-
-  downloadCsvBtn.onclick = ()=>{
-    const csv = toCSV(exportObj);
-    const fn = `lesetraining_${exportObj.child}_${exportObj.mode}_${exportObj.session_id}.csv`;
-    downloadText(fn, csv, "text/csv;charset=utf-8");
-  };
-
-  copyJsonBtn.onclick = async ()=>{
-    try{
-      await navigator.clipboard.writeText(preview);
-      alert("JSON kopiert.");
-    }catch(e){
-      alert("Kopieren nicht möglich (Browser-Einstellung). Nutze Download.");
-    }
-  };
+  const txt = buildReportText(completed);
+  reportText.value = txt;
+  reportText.scrollTop = 0;
 }
 
-/* Initial */
-setTimeout(()=> speak("Hör gut zu und fülle die Lücke."), 650);
+copyReportBtn.onclick = async ()=>{
+  try{
+    await navigator.clipboard.writeText(reportText.value || "");
+    alert("Report kopiert.");
+  }catch(e){
+    alert("Kopieren nicht möglich. Markiere den Text und kopiere manuell.");
+  }
+};
+
+/* Init */
+setTimeout(()=> speakText("Hör gut zu."), 650);
 updateStartState();
 </script>
 </body>
