@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Lautgetreue Wörter – Hör gut zu und schreibe!</title>
+<style>
+  :root {
+    font-family: "Comic Sans MS", "Segoe UI", sans-serif;
+    background: #eef2ff;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .app {
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    padding: 2rem 2.5rem;
+    max-width: 620px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  h1 {
+    margin-top: 0;
+    font-size: 1.8rem;
+  }
+  .word {
+    font-family: "Comic Sans MS", sans-serif;
+    font-size: 3.6rem;
+    letter-spacing: 0.15em;
+    margin: 1rem 0;
+  }
+  .letters {
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: .5rem;
+  }
+  .letter-btn {
+    padding: 0.7rem;
+    border-radius: 10px;
+    background: #e0e7ff;
+    border: 2px solid #c7d2fe;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  .letter-btn:hover { background:#c7d2fe; }
+  .feedback {
+    min-height: 1.4rem;
+    font-size: 1.2rem;
+    margin-top: .8rem;
+    font-weight: 600;
+  }
+  .ok { color:#15803d; }
+  .err { color:#b91c1c; }
+  #finish-btn {
+    margin-top: 1.2rem;
+    padding: .8rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    background: #22c55e;
+    color: #fff;
+    font-weight: 600;
+  }
+  #finish-btn:disabled {
+    background:#9ca3af;
+    cursor:not-allowed;
+  }
+  .hidden { display:none; }
+  #speak-btn {
+    padding:0.6rem 1rem;
+    font-size:1rem;
+    border-radius:10px;
+    cursor:pointer;
+    border:1px solid #c7d2fe;
+    background:#eef2ff;
+  }
+  #speak-btn:hover { background:#e0e7ff; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>Hör gut zu und schreibe!</h1>
+  <p id="instruction">Hör gut zu und schreibe, was du hörst.</p>
+
+  <div class="word" id="word-display">_</div>
+
+  <button id="speak-btn">🔊 Noch einmal hören</button>
+
+  <div class="letters" id="letters"></div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <button id="finish-btn" class="hidden">Fertig ✔</button>
+</div>
+
+<script>
+/* --------- Lautgetreue Nomen (alle klein gespeichert, Anzeige mit Großbuchstaben) --------- */
+const WORDS = [
+  "baum","haus","mann","frau","schule","apfel","palme",
+  "hund","katze","maus","tisch","stuhl","sofa","bank","bett","teller","becher","löffel","gabel",
+  "kind","mama","papa","oma","opa","onkel","tante","freund","lehrer","arzt",
+  "auto","bus","zug","bahn","boot","rad","roller","lampe","uhr","tuch",
+  "hand","kopf","arm","bein","fuss","auge","ohr","mund","zahn","haar",
+  "ofen","ofen","rose","tanne","wolke","stern","mond","see","berg","tal",
+  "garten","hof","zaun","tor","weg","wald","wiese","bach","sand","stein",
+  "kiste","dose","tasche","jacke","hose","rock","hemd","hut","schuh","socke"
+];
+
+/* --------- Variablen --------- */
+let correctCount = 0;
+const TARGET = 20;
+let currentWord = "";
+let missingIndex = 0;
+let correctLetter = "";
+
+/* --------- DOM --------- */
+const wordDisplay = document.getElementById("word-display");
+const lettersDiv   = document.getElementById("letters");
+const feedback     = document.getElementById("feedback");
+const speakBtn     = document.getElementById("speak-btn");
+const finishBtn    = document.getElementById("finish-btn");
+
+/* --------- Sprachausgabe --------- */
+function speak(text) {
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang  = "de-DE";
+  utter.rate  = 0.7; // langsam
+  speechSynthesis.speak(utter);
+}
+
+/* Arbeitsauftrag automatisch vorlesen */
+setTimeout(() => {
+  speak("Hör gut zu und schreibe, was du hörst.");
+}, 800);
+
+/* --------- Neues Wort erzeugen --------- */
+function newWord() {
+  feedback.textContent = "";
+  feedback.className   = "feedback";
+
+  currentWord  = WORDS[Math.floor(Math.random() * WORDS.length)]; // klein
+  missingIndex = Math.floor(Math.random() * currentWord.length);
+  correctLetter = currentWord[missingIndex];
+
+  // Anzeige mit Unterstrich + erstem Buchstaben groß
+  let display = "";
+  for (let i = 0; i < currentWord.length; i++) {
+    let ch = (i === missingIndex) ? "_" : currentWord[i];
+    if (i === 0 && ch !== "_") ch = ch.toUpperCase();
+    display += ch;
+  }
+  wordDisplay.textContent = display;
+
+  // Wort vorlesen (mit Großbuchstabe, aber gesprochen egal)
+  const spokenWord = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
+  speak(spokenWord);
+
+  generateLetterButtons();
+}
+
+/* --------- Buchstaben-Auswahl erzeugen --------- */
+function generateLetterButtons() {
+  lettersDiv.innerHTML = "";
+
+  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+
+  // Richtige Antwort + 5 Zufallsbuchstaben
+  let options = [correctLetter];
+  while (options.length < 6) {
+    const b = alphabet[Math.floor(Math.random() * alphabet.length)];
+    if (!options.includes(b)) options.push(b);
+  }
+
+  // Mischen
+  options.sort(() => Math.random() - 0.5);
+
+  options.forEach(letter => {
+    const btn = document.createElement("button");
+    btn.className = "letter-btn";
+    btn.textContent = letter;
+
+    btn.onclick = () => {
+      if (letter === correctLetter) {
+        correctCount++;
+        feedback.textContent = "Richtig! 👍";
+        feedback.classList.add("ok");
+
+        if (correctCount >= TARGET) {
+          endGame();
+        } else {
+          setTimeout(newWord, 700);
+        }
+      } else {
+        // falscher Buchstabe verschwindet
+        btn.remove();
+      }
+    };
+
+    lettersDiv.appendChild(btn);
+  });
+}
+
+/* --------- Spielende --------- */
+function endGame() {
+  wordDisplay.textContent = "Super gemacht!";
+  lettersDiv.innerHTML = "";
+  speak("Sehr gut! Du hast viele Wörter richtig gehört und geschrieben.");
+  finishBtn.classList.remove("hidden");
+
+  finishBtn.onclick = () => {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("AppSolved", "*");
+      }
+    } catch (e) {}
+    finishBtn.textContent = "Erledigt ✔";
+    finishBtn.disabled = true;
+  };
+}
+
+/* --------- Buttons --------- */
+speakBtn.onclick = () => {
+  const spokenWord = currentWord
+    ? currentWord.charAt(0).toUpperCase() + currentWord.slice(1)
+    : "";
+  if (spokenWord) speak(spokenWord);
+};
+
+/* --------- Start --------- */
+newWord();
+</script>
+
+</body>
+</html>
