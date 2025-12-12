@@ -42,15 +42,20 @@
     gap: .5rem;
   }
   .letter-btn {
+    font-family: "Comic Sans MS", sans-serif;
     padding: 0.7rem;
     border-radius: 10px;
     background: #e0e7ff;
     border: 2px solid #c7d2fe;
     cursor: pointer;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: bold;
   }
   .letter-btn:hover { background:#c7d2fe; }
+  .letter-btn:disabled {
+    opacity: .5;
+    cursor: default;
+  }
   .feedback {
     min-height: 1.4rem;
     font-size: 1.2rem;
@@ -104,26 +109,50 @@
 </div>
 
 <script>
-/* --------- Lautgetreue Nomen (alle klein gespeichert, Anzeige mit Großbuchstaben) --------- */
-const WORDS = [
-  "baum","haus","mann","frau","schule","apfel","palme",
-  "hund","katze","maus","tisch","stuhl","sofa","bank","bett","teller","becher","löffel","gabel",
-  "kind","mama","papa","oma","opa","onkel","tante","freund","lehrer","arzt",
-  "auto","bus","zug","bahn","boot","rad","roller","lampe","uhr","tuch",
-  "hand","kopf","arm","bein","fuss","auge","ohr","mund","zahn","haar",
-  "ofen","ofen","rose","tanne","wolke","stern","mond","see","berg","tal",
-  "garten","hof","zaun","tor","weg","wald","wiese","bach","sand","stein",
-  "kiste","dose","tasche","jacke","hose","rock","hemd","hut","schuh","socke"
+/* --------- Laut-Einheiten (Buchstaben + Diphthonge) --------- */
+const MULTI_GRAPHEMES = ["au", "ei", "eu", "äu"];
+
+/* Einheiten, aus denen die Antwort-Buttons gezogen werden:
+   – Einzelbuchstaben
+   – Diphthonge wie au, ei, eu, äu */
+const LETTER_UNITS = [
+  "a","e","i","o","u","ä","ö","ü",
+  "b","d","f","g","h","k","l","m","n","p",
+  "r","s","t","w","z",
+  "au","ei","eu","äu"
 ];
+
+/* --------- Lautgetreue Wörter (nur Tiere & Alltag, keine ie/eh/doppelten Buchstaben) --------- */
+/* alle klein gespeichert, Anzeige mit Großbuchstaben am Wortanfang */
+const WORDS = [
+  "baum","haus","maus","frau","auto","eule","feuer","laus","haut",
+  "lama","tiger","zebra","panda","dachs","biber","wal","rabe","ente","gans",
+  "ente","ente","kuh","kater","katze","hund","hahn","hase","ente","eber",
+  "sofa","stuhl","tisch","bett","tuch","uhr","tor","zaun","zaum","korb",
+  "hose","rock","hut","hemd","mütze","mantel","jacke","schuh","hose","gurt",
+  "brot","apfel","birne","banane","traube","keks","kuchen","salat","pizza","saft",
+  "bus","zug","bahn","boot","rad","taxi","auto","tram","weg","brücke",
+  "park","wald","wiese","see","teich","bach","strand","sand","ufer","hafen",
+  "kind","mama","papa","oma","opa","onkel","tante","freund","gruppe","team"
+];
+
+/* Du kannst hier jederzeit Wörter austauschen/ergänzen. Achte darauf:
+   – keine „ie“, „eh“ usw.
+   – keine doppelten Buchstaben wie „mm“, „tt“ etc.
+   – Diphthonge au/ei/eu/äu sind erlaubt und werden als Einheit behandelt. */
 
 /* --------- Variablen --------- */
 let correctCount = 0;
 const TARGET = 20;
-let currentWord = "";
-let missingIndex = 0;
-let correctLetter = "";
 
-/* --------- DOM --------- */
+let currentWord = "";
+let missingStart = 0;
+let missingLen = 1;
+let correctUnit = "";
+
+let freeze = false; // während der 5s-Lesepause keine Eingabe
+
+/* --------- DOM-Referenzen --------- */
 const wordDisplay = document.getElementById("word-display");
 const lettersDiv   = document.getElementById("letters");
 const feedback     = document.getElementById("feedback");
@@ -143,78 +172,175 @@ setTimeout(() => {
   speak("Hör gut zu und schreibe, was du hörst.");
 }, 800);
 
+/* --------- Hilfsfunktionen --------- */
+function pickRandomWord() {
+  return WORDS[Math.floor(Math.random() * WORDS.length)];
+}
+
+/* Wort in Laut-Einheiten zerlegen (Buchstaben + Diphthonge) */
+function segmentWord(word) {
+  const segments = [];
+  for (let i = 0; i < word.length; ) {
+    let two = word.slice(i, i + 2);
+    if (MULTI_GRAPHEMES.includes(two)) {
+      segments.push({ start: i, len: 2, text: two });
+      i += 2;
+    } else {
+      segments.push({ start: i, len: 1, text: word[i] });
+      i += 1;
+    }
+  }
+  return segments;
+}
+
+/* Anzeige mit Lücke im fehlenden Laut */
+function buildDisplayWithGap(word, start, len) {
+  let result = "";
+  for (let i = 0; i < word.length; ) {
+    if (i === start) {
+      // ein Unterstrich für die Laut-Lücke
+      let ch = "_";
+      if (i === 0) {
+        // Wortanfang: Unterstrich bleibt Unterstrich
+        result += ch;
+      } else {
+        result += ch;
+      }
+      i += len;
+    } else {
+      let ch = word[i];
+      if (i === 0) ch = ch.toUpperCase();
+      result += ch;
+      i += 1;
+    }
+  }
+  return result;
+}
+
+/* Anzeige mit richtigem Laut in Grün */
+function buildDisplayWithHighlight(word, start, len) {
+  let html = "";
+  for (let i = 0; i < word.length; ) {
+    if (i === start) {
+      let unit = word.slice(i, i + len);
+      if (i === 0) {
+        unit = unit.charAt(0).toUpperCase() + unit.slice(1);
+      }
+      html += `<span style="color:#16a34a;">${unit}</span>`;
+      i += len;
+    } else {
+      let ch = word[i];
+      if (i === 0) ch = ch.toUpperCase();
+      html += ch;
+      i += 1;
+    }
+  }
+  return html;
+}
+
 /* --------- Neues Wort erzeugen --------- */
 function newWord() {
+  freeze = false;
   feedback.textContent = "";
   feedback.className   = "feedback";
 
-  currentWord  = WORDS[Math.floor(Math.random() * WORDS.length)]; // klein
-  missingIndex = Math.floor(Math.random() * currentWord.length);
-  correctLetter = currentWord[missingIndex];
+  currentWord  = pickRandomWord();
+  const segments = segmentWord(currentWord);
 
-  // Anzeige mit Unterstrich + erstem Buchstaben groß
-  let display = "";
-  for (let i = 0; i < currentWord.length; i++) {
-    let ch = (i === missingIndex) ? "_" : currentWord[i];
-    if (i === 0 && ch !== "_") ch = ch.toUpperCase();
-    display += ch;
-  }
+  // Einen Laut (Segment) als Lücke auswählen
+  const seg = segments[Math.floor(Math.random() * segments.length)];
+  missingStart = seg.start;
+  missingLen   = seg.len;
+  correctUnit  = seg.text;
+
+  // Wort mit Lücke anzeigen
+  const display = buildDisplayWithGap(currentWord, missingStart, missingLen);
   wordDisplay.textContent = display;
 
-  // Wort vorlesen (mit Großbuchstabe, aber gesprochen egal)
-  const spokenWord = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
-  speak(spokenWord);
+  // Wort vorlesen (mit Großbuchstabe)
+  const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
+  speak(spoken);
 
   generateLetterButtons();
 }
 
-/* --------- Buchstaben-Auswahl erzeugen --------- */
+/* --------- Buchstaben-/Laut-Auswahl erzeugen --------- */
 function generateLetterButtons() {
   lettersDiv.innerHTML = "";
 
-  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  let options = [correctUnit];
 
-  // Richtige Antwort + 5 Zufallsbuchstaben
-  let options = [correctLetter];
+  // Fülle mit zufälligen Einheiten auf (Einzelbuchstabe oder Diphthong)
   while (options.length < 6) {
-    const b = alphabet[Math.floor(Math.random() * alphabet.length)];
-    if (!options.includes(b)) options.push(b);
+    const unit = LETTER_UNITS[Math.floor(Math.random() * LETTER_UNITS.length)];
+    if (!options.includes(unit)) {
+      options.push(unit);
+    }
   }
 
-  // Mischen
+  // mischen
   options.sort(() => Math.random() - 0.5);
 
-  options.forEach(letter => {
+  options.forEach(unit => {
     const btn = document.createElement("button");
     btn.className = "letter-btn";
-    btn.textContent = letter;
-
+    btn.textContent = unit;
     btn.onclick = () => {
-      if (letter === correctLetter) {
-        correctCount++;
-        feedback.textContent = "Richtig! 👍";
-        feedback.classList.add("ok");
-
-        if (correctCount >= TARGET) {
-          endGame();
-        } else {
-          setTimeout(newWord, 700);
-        }
-      } else {
-        // falscher Buchstabe verschwindet
-        btn.remove();
-      }
+      if (freeze) return;
+      handleChoice(unit, btn);
     };
-
     lettersDiv.appendChild(btn);
   });
+}
+
+/* --------- Eingabe behandeln --------- */
+function handleChoice(unit, btn) {
+  if (unit === correctUnit) {
+    correctCount++;
+    feedback.textContent = "Richtig! 👍 Lies das Wort.";
+    feedback.classList.add("ok");
+
+    // Alle Buttons deaktivieren während der Lese-Pause
+    freezeButtons();
+
+    // Vollständiges Wort mit grünem Laut anzeigen
+    const html = buildDisplayWithHighlight(currentWord, missingStart, missingLen);
+    wordDisplay.innerHTML = html;
+
+    // Wort nochmal vorlesen
+    const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
+    speak(spoken);
+
+    freeze = true;
+
+    if (correctCount >= TARGET) {
+      // Letztes Wort noch 5 Sekunden lesen lassen, dann Spielende
+      setTimeout(() => {
+        endGame();
+      }, 5000);
+    } else {
+      // 5 Sekunden Lesepause, dann neues Wort
+      setTimeout(() => {
+        newWord();
+      }, 5000);
+    }
+
+  } else {
+    // falscher Laut → Button verschwindet
+    btn.remove();
+  }
+}
+
+function freezeButtons() {
+  const all = lettersDiv.querySelectorAll("button");
+  all.forEach(b => b.disabled = true);
 }
 
 /* --------- Spielende --------- */
 function endGame() {
   wordDisplay.textContent = "Super gemacht!";
   lettersDiv.innerHTML = "";
-  speak("Sehr gut! Du hast viele Wörter richtig gehört und geschrieben.");
+  speak("Sehr gut! Du hast viele Wörter richtig gehört und gelesen.");
   finishBtn.classList.remove("hidden");
 
   finishBtn.onclick = () => {
@@ -230,10 +356,9 @@ function endGame() {
 
 /* --------- Buttons --------- */
 speakBtn.onclick = () => {
-  const spokenWord = currentWord
-    ? currentWord.charAt(0).toUpperCase() + currentWord.slice(1)
-    : "";
-  if (spokenWord) speak(spokenWord);
+  if (!currentWord || freeze) return;
+  const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
+  speak(spoken);
 };
 
 /* --------- Start --------- */
