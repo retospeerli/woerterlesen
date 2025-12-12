@@ -1,369 +1,652 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Lautgetreue Wörter – Hör gut zu und schreibe!</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lesetraining – Hör zu und fülle die Lücke!</title>
 <style>
-  :root {
-    font-family: "Comic Sans MS", "Segoe UI", sans-serif;
-    background: #eef2ff;
+  :root{
+    font-family: "Comic Sans MS","Segoe UI",system-ui,sans-serif;
+    background: radial-gradient(1200px 600px at 20% 10%, #eef2ff 0%, #fdf2f8 45%, #ecfeff 100%);
   }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    box-sizing:border-box;
   }
-  .app {
-    background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    padding: 2rem 2.5rem;
-    max-width: 620px;
+  .app{
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(199,210,254,0.7);
+    border-radius: 20px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.10);
+    padding: 1.9rem 2.2rem;
+    max-width: 720px;
     width: 100%;
-    box-sizing: border-box;
-    text-align: center;
+    box-sizing:border-box;
+    text-align:center;
   }
-  h1 {
-    margin-top: 0;
-    font-size: 1.8rem;
+  h1{
+    margin:0 0 .35rem 0;
+    font-size:1.85rem;
   }
-  .word {
-    font-family: "Comic Sans MS", sans-serif;
-    font-size: 3.6rem;
-    letter-spacing: 0.15em;
-    margin: 1rem 0;
+  .subtitle{
+    margin:.2rem 0 .9rem 0;
+    font-size: .98rem;
+    color:#4b5563;
+    line-height:1.35;
   }
-  .letters {
-    margin-top: 1.4rem;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: .5rem;
+  .hidden{ display:none; }
+
+  .mode-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap:.6rem;
+    margin: 1rem 0 .5rem 0;
   }
-  .letter-btn {
-    font-family: "Comic Sans MS", sans-serif;
-    padding: 0.7rem;
-    border-radius: 10px;
-    background: #e0e7ff;
-    border: 2px solid #c7d2fe;
-    cursor: pointer;
-    font-size: 1.6rem;
-    font-weight: bold;
+  @media (min-width: 720px){
+    .mode-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
   }
-  .letter-btn:hover { background:#c7d2fe; }
-  .letter-btn:disabled {
-    opacity: .5;
-    cursor: default;
+
+  .mode-btn{
+    padding: .85rem .7rem;
+    border-radius: 16px;
+    border: 2px solid #d1d5db;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+    font-size: .95rem;
+    font-weight: 700;
+    cursor:pointer;
+    transition: transform .05s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .feedback {
-    min-height: 1.4rem;
-    font-size: 1.2rem;
-    margin-top: .8rem;
-    font-weight: 600;
+  .mode-btn:hover{
+    border-color:#a5b4fc;
+    box-shadow: 0 8px 22px rgba(99,102,241,0.12);
   }
-  .ok { color:#15803d; }
-  .err { color:#b91c1c; }
-  #finish-btn {
-    margin-top: 1.2rem;
-    padding: .8rem 1rem;
-    font-size: 1.2rem;
-    border-radius: 12px;
-    cursor: pointer;
-    border: none;
-    background: #22c55e;
-    color: #fff;
-    font-weight: 600;
+  .mode-btn.selected{
+    border-color:#4f46e5;
+    background: linear-gradient(180deg, #4f46e5 0%, #2563eb 100%);
+    color:#fff;
+    box-shadow: 0 10px 26px rgba(37,99,235,0.30);
   }
-  #finish-btn:disabled {
+  .mode-btn:active{ transform: translateY(1px); }
+
+  .start-info{
+    min-height:1.2rem;
+    font-size:.9rem;
+    color:#6b7280;
+    margin-bottom:.2rem;
+  }
+
+  .primary-btn{
+    margin-top:.8rem;
+    padding:.75rem 1.15rem;
+    font-size:1.05rem;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    color:#fff;
+    font-weight:800;
+    box-shadow: 0 10px 22px rgba(37,99,235,0.22);
+    transition: transform .05s ease, filter .15s ease;
+  }
+  .primary-btn:hover{ filter: brightness(1.03); }
+  .primary-btn:active{ transform: translateY(1px); }
+  .primary-btn:disabled{
     background:#9ca3af;
+    box-shadow:none;
     cursor:not-allowed;
   }
-  .hidden { display:none; }
-  #speak-btn {
-    padding:0.6rem 1rem;
-    font-size:1rem;
-    border-radius:10px;
-    cursor:pointer;
-    border:1px solid #c7d2fe;
-    background:#eef2ff;
+
+  .word{
+    font-family: "Comic Sans MS", sans-serif;
+    font-size: 3.25rem;
+    letter-spacing: 0.16em;
+    margin: 1.1rem 0 .55rem;
+    user-select:none;
   }
-  #speak-btn:hover { background:#e0e7ff; }
+  .pattern-info{
+    font-size: .95rem;
+    color:#6b7280;
+    margin-bottom:.8rem;
+  }
+
+  #speak-btn{
+    padding:.62rem 1rem;
+    font-size:1rem;
+    border-radius:12px;
+    cursor:pointer;
+    border: 2px solid #c7d2fe;
+    background: #eef2ff;
+    margin-bottom:.55rem;
+    font-weight:700;
+  }
+  #speak-btn:hover{ background:#e0e7ff; }
+
+  .letters{
+    margin-top: 1rem;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:.65rem;
+  }
+  .letter-btn{
+    font-family: "Comic Sans MS", sans-serif;
+    padding: .85rem .6rem;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #e0f2fe 0%, #e0e7ff 100%);
+    border: 2px solid #c7d2fe;
+    cursor:pointer;
+    font-size: 1.55rem;
+    font-weight: 900;
+  }
+  .letter-btn:hover{ filter: brightness(1.03); }
+  .letter-btn:disabled{ opacity:.55; cursor:default; }
+
+  .feedback{
+    min-height:1.6rem;
+    font-size:1.2rem;
+    margin-top:.85rem;
+    font-weight:900;
+  }
+  .ok{ color:#15803d; }
+  .err{ color:#b91c1c; }
+
+  .stats{
+    margin-top:.45rem;
+    font-size:.95rem;
+    color:#374151;
+    font-weight:700;
+  }
+
+  #finish-btn{
+    margin-top: 1.15rem;
+    padding:.86rem 1rem;
+    font-size:1.15rem;
+    border-radius: 14px;
+    cursor:pointer;
+    border:none;
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+    color:#fff;
+    font-weight:900;
+    box-shadow: 0 12px 28px rgba(34,197,94,0.22);
+  }
+  #finish-btn:disabled{ background:#9ca3af; box-shadow:none; cursor:not-allowed; }
 </style>
 </head>
+
 <body>
-
 <div class="app">
-  <h1>Hör gut zu und schreibe!</h1>
-  <p id="instruction">Hör gut zu und schreibe, was du hörst.</p>
+  <h1>Lesetraining</h1>
+  <p class="subtitle">
+    Hör gut zu. Im Wort ist eine Lücke.<br>
+    Wähle die richtige Lösung (immer 3 Buttons).
+  </p>
 
-  <div class="word" id="word-display">_</div>
+  <!-- START -->
+  <div id="start-screen">
+    <div class="mode-grid" id="mode-grid">
+      <button type="button" class="mode-btn" data-mode="start">1) Anfangsbuchstabe</button>
+      <button type="button" class="mode-btn" data-mode="end">2) Endbuchstabe</button>
+      <button type="button" class="mode-btn" data-mode="vowel">3) Vokale</button>
+      <button type="button" class="mode-btn" data-mode="cons">4) Konsonanten</button>
+      <button type="button" class="mode-btn" data-mode="diph">5) Diphthonge (au/ei/eu)</button>
+    </div>
+    <div class="start-info" id="start-info">Bitte wähle einen Modus.</div>
+    <button id="start-btn" class="primary-btn" disabled>Los geht's!</button>
+  </div>
 
-  <button id="speak-btn">🔊 Noch einmal hören</button>
+  <!-- QUIZ -->
+  <div id="quiz-screen" class="hidden">
+    <div class="word" id="word-display">_</div>
+    <button id="speak-btn">🔊 Noch einmal hören</button>
+    <div class="pattern-info" id="pattern-info"></div>
 
-  <div class="letters" id="letters"></div>
+    <div class="letters" id="letters"></div>
 
-  <div class="feedback" id="feedback"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="stats" id="stats"></div>
 
-  <button id="finish-btn" class="hidden">Fertig ✔</button>
+    <button id="finish-btn" class="hidden">Fertig ✔</button>
+  </div>
 </div>
 
 <script>
-/* --------- Laut-Einheiten (Buchstaben + Diphthonge) --------- */
-const MULTI_GRAPHEMES = ["au", "ei", "eu", "äu"];
+/* =========================
+   DATEN (lautgetreu, simpel)
+   ========================= */
 
-/* Einheiten, aus denen die Antwort-Buttons gezogen werden:
-   – Einzelbuchstaben
-   – Diphthonge wie au, ei, eu, äu */
-const LETTER_UNITS = [
-  "a","e","i","o","u","ä","ö","ü",
-  "b","d","f","g","h","k","l","m","n","p",
-  "r","s","t","w","z",
-  "au","ei","eu","äu"
+/*
+  pos: "N" (Nomen) oder "V" (Verb)
+  Wörter (Modi 1–4) sind streng: kein ie/ee/eh, kein h, kein sch/ch/ng, kein ck/tz, keine Doppelungen
+*/
+const WORDS_CORE = [
+  // Nomen (Alltag)
+  { w:"dose", pos:"N" }, { w:"rose", pos:"N" }, { w:"nase", pos:"N" }, { w:"sofa", pos:"N" },
+  { w:"brot", pos:"N" }, { w:"topf", pos:"N" }, { w:"kiste", pos:"N" }, { w:"puppe", pos:"N" },
+  { w:"lampe", pos:"N" }, { w:"blume", pos:"N" }, { w:"kabel", pos:"N" }, { w:"karte", pos:"N" },
+  { w:"perle", pos:"N" }, { w:"wolke", pos:"N" }, { w:"taler", pos:"N" }, { w:"radio", pos:"N" },
+  { w:"limo", pos:"N" }, { w:"silo", pos:"N" }, { w:"bote", pos:"N" }, { w:"rute", pos:"N" },
+
+  // Tiere (lautgetreu, ohne verbotene Muster)
+  { w:"lama", pos:"N" }, { w:"bison", pos:"N" }, { w:"puma", pos:"N" }, { w:"panda", pos:"N" },
+  { w:"koala", pos:"N" }, { w:"emu", pos:"N" }, { w:"yak", pos:"N" }, { w:"dodo", pos:"N" },
+
+  // Verben (Grundform, ohne Dehnung & verbotene Muster)
+  { w:"malen", pos:"V" }, { w:"reden", pos:"V" }, { w:"sagen", pos:"V" }, { w:"legen", pos:"V" },
+  { w:"tragen", pos:"V" }, { w:"tanzen", pos:"V" }, { w:"lachen", pos:"V" }, { w:"toben", pos:"V" },
+  { w:"bad en".replace(" ",""), pos:"V" }, { w:"nagen", pos:"V" }, { w:"regen", pos:"V" }, { w:"waten", pos:"V" }
 ];
 
-/* --------- Lautgetreue Wörter (nur Tiere & Alltag, keine ie/eh/doppelten Buchstaben) --------- */
-/* alle klein gespeichert, Anzeige mit Großbuchstaben am Wortanfang */
-const WORDS = [
-  "baum","haus","maus","frau","auto","eule","feuer","laus","haut",
-  "lama","tiger","zebra","panda","dachs","biber","wal","rabe","ente","gans",
-  "ente","ente","kuh","kater","katze","hund","hahn","hase","ente","eber",
-  "sofa","stuhl","tisch","bett","tuch","uhr","tor","zaun","zaum","korb",
-  "hose","rock","hut","hemd","mütze","mantel","jacke","schuh","hose","gurt",
-  "brot","apfel","birne","banane","traube","keks","kuchen","salat","pizza","saft",
-  "bus","zug","bahn","boot","rad","taxi","auto","tram","weg","brücke",
-  "park","wald","wiese","see","teich","bach","strand","sand","ufer","hafen",
-  "kind","mama","papa","oma","opa","onkel","tante","freund","gruppe","team"
+/* Diphthong-Wörter: echte au/ei/eu. (3 Buttons sind immer: au / ei / eu) */
+const WORDS_DIPH = [
+  // au
+  { w:"haus", diph:"au", pos:"N" }, { w:"maus", diph:"au", pos:"N" }, { w:"baum", diph:"au", pos:"N" },
+  { w:"zaun", diph:"au", pos:"N" }, { w:"kauf", diph:"au", pos:"N" }, { w:"laut", diph:"au", pos:"N" },
+  { w:"pause", diph:"au", pos:"N" }, { w:"traum", diph:"au", pos:"N" }, { w:"raum", diph:"au", pos:"N" },
+  { w:"staub", diph:"au", pos:"N" },
+
+  // ei
+  { w:"ein", diph:"ei", pos:"N" }, { w:"eins", diph:"ei", pos:"N" }, { w:"bein", diph:"ei", pos:"N" },
+  { w:"stein", diph:"ei", pos:"N" }, { w:"seil", diph:"ei", pos:"N" }, { w:"zeit", diph:"ei", pos:"N" },
+  { w:"wein", diph:"ei", pos:"N" }, { w:"teil", diph:"ei", pos:"N" }, { w:"seite", diph:"ei", pos:"N" },
+  { w:"seife", diph:"ei", pos:"N" },
+
+  // eu
+  { w:"eule", diph:"eu", pos:"N" }, { w:"neu", diph:"eu", pos:"N" }, { w:"neun", diph:"eu", pos:"N" },
+  { w:"leute", diph:"eu", pos:"N" }, { w:"freuen", diph:"eu", pos:"V" }, { w:"treu", diph:"eu", pos:"N" },
+  { w:"zeug", diph:"eu", pos:"N" }, { w:"heute", diph:"eu", pos:"N" }, { w:"beule", diph:"eu", pos:"N" },
+  { w:"keule", diph:"eu", pos:"N" }
 ];
 
-/* Du kannst hier jederzeit Wörter austauschen/ergänzen. Achte darauf:
-   – keine „ie“, „eh“ usw.
-   – keine doppelten Buchstaben wie „mm“, „tt“ etc.
-   – Diphthonge au/ei/eu/äu sind erlaubt und werden als Einheit behandelt. */
+/* =========================
+   ALLGEMEIN
+   ========================= */
 
-/* --------- Variablen --------- */
+const TARGET_CORRECT = 20;
+
+let mode = null;          // start | end | vowel | cons | diph
 let correctCount = 0;
-const TARGET = 20;
 
-let currentWord = "";
-let missingStart = 0;
-let missingLen = 1;
-let correctUnit = "";
+let current = null;       // {word, pos, target, index, template, displayWord}
+let freeze = false;
 
-let freeze = false; // während der 5s-Lesepause keine Eingabe
+const VOWELS = ["a","e","i","o","u"];
+const LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");
 
-/* --------- DOM-Referenzen --------- */
-const wordDisplay = document.getElementById("word-display");
+/* =========================
+   DOM
+   ========================= */
+const startScreen  = document.getElementById("start-screen");
+const quizScreen   = document.getElementById("quiz-screen");
+const modeGrid     = document.getElementById("mode-grid");
+const startInfo    = document.getElementById("start-info");
+const startBtn     = document.getElementById("start-btn");
+
+const wordDisplay  = document.getElementById("word-display");
 const lettersDiv   = document.getElementById("letters");
 const feedback     = document.getElementById("feedback");
+const patternInfo  = document.getElementById("pattern-info");
+const stats        = document.getElementById("stats");
 const speakBtn     = document.getElementById("speak-btn");
 const finishBtn    = document.getElementById("finish-btn");
 
-/* --------- Sprachausgabe --------- */
-function speak(text) {
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang  = "de-DE";
-  utter.rate  = 0.7; // langsam
-  speechSynthesis.speak(utter);
+/* =========================
+   SPEAK
+   ========================= */
+function speak(text){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "de-DE";
+  u.rate = 0.78;
+  speechSynthesis.speak(u);
 }
 
-/* Arbeitsauftrag automatisch vorlesen */
-setTimeout(() => {
-  speak("Hör gut zu und schreibe, was du hörst.");
-}, 800);
+setTimeout(()=> speak("Hör gut zu und fülle die Lücke."), 650);
 
-/* --------- Hilfsfunktionen --------- */
-function pickRandomWord() {
-  return WORDS[Math.floor(Math.random() * WORDS.length)];
+/* =========================
+   HELFER
+   ========================= */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function cap(word){ return word ? word[0].toUpperCase()+word.slice(1) : word; }
+
+function isVowel(ch){ return VOWELS.includes(ch); }
+function isConsonant(ch){ return LETTERS.includes(ch) && !isVowel(ch); }
+
+/* Wortanzeige: bei Nomen groß, sonst klein */
+function displayWordBase(word,pos){
+  const lower = word.toLowerCase();
+  return (pos === "N") ? cap(lower) : lower;
 }
 
-/* Wort in Laut-Einheiten zerlegen (Buchstaben + Diphthonge) */
-function segmentWord(word) {
-  const segments = [];
-  for (let i = 0; i < word.length; ) {
-    let two = word.slice(i, i + 2);
-    if (MULTI_GRAPHEMES.includes(two)) {
-      segments.push({ start: i, len: 2, text: two });
-      i += 2;
-    } else {
-      segments.push({ start: i, len: 1, text: word[i] });
-      i += 1;
-    }
+/* Template bauen: ersetze Ziel an index durch "_" (oder bei diph: ersetze diphthong durch "_") */
+function makeTemplate(word, pos, index, len=1){
+  const base = displayWordBase(word,pos);
+  const before = base.slice(0,index);
+  const after  = base.slice(index+len);
+  return before + "_" + after;
+}
+
+/* Grün hervorheben (Zielzeichen/Zieldiphthong) */
+function highlightAt(word, pos, index, len=1){
+  const base = displayWordBase(word,pos);
+  const before = base.slice(0,index);
+  const mid = base.slice(index, index+len);
+  const after = base.slice(index+len);
+  return `${before}<span style="color:#16a34a;">${mid}</span>${after}`;
+}
+
+/* 3 Optionen erstellen: korrekt + 2 passende Distraktoren */
+function make3Options(correct, kind, nounUpper=false){
+  // kind: "vowel" | "cons" | "diph" | "letter"
+  let pool = [];
+  if (kind === "diph"){
+    pool = ["au","ei","eu"].filter(x => x !== correct);
+  } else if (kind === "vowel"){
+    pool = VOWELS.filter(x => x !== correct);
+  } else if (kind === "cons"){
+    pool = LETTERS.filter(ch => isConsonant(ch) && ch !== correct);
+  } else {
+    // letter (start/end): wenn korrekt Vokal -> andere Vokale, sonst Konsonanten
+    if (isVowel(correct)) pool = VOWELS.filter(x => x !== correct);
+    else pool = LETTERS.filter(ch => isConsonant(ch) && ch !== correct);
   }
-  return segments;
-}
 
-/* Anzeige mit Lücke im fehlenden Laut */
-function buildDisplayWithGap(word, start, len) {
-  let result = "";
-  for (let i = 0; i < word.length; ) {
-    if (i === start) {
-      // ein Unterstrich für die Laut-Lücke
-      let ch = "_";
-      if (i === 0) {
-        // Wortanfang: Unterstrich bleibt Unterstrich
-        result += ch;
-      } else {
-        result += ch;
-      }
-      i += len;
-    } else {
-      let ch = word[i];
-      if (i === 0) ch = ch.toUpperCase();
-      result += ch;
-      i += 1;
-    }
+  const opts = [correct];
+  while(opts.length < 3){
+    const cand = pool.splice(randInt(0, pool.length-1), 1)[0];
+    if (cand && !opts.includes(cand)) opts.push(cand);
   }
-  return result;
+
+  // Nomen: Buttons groß (nur bei Buchstaben-Modi 1/2)
+  const shown = opts.map(x => {
+    if (!nounUpper) return x;
+    // einzelner Buchstabe -> upper, Diphthong bleibt klein (wird in Modus 5 genutzt, nounUpper=false)
+    return (x.length === 1) ? x.toUpperCase() : x;
+  });
+
+  // mischen, aber korrekt-Label behalten:
+  const zipped = shown.map((s,i)=>({ shown:s, raw: opts[i] }));
+  zipped.sort(()=>Math.random()-0.5);
+  return zipped;
 }
 
-/* Anzeige mit richtigem Laut in Grün */
-function buildDisplayWithHighlight(word, start, len) {
-  let html = "";
-  for (let i = 0; i < word.length; ) {
-    if (i === start) {
-      let unit = word.slice(i, i + len);
-      if (i === 0) {
-        unit = unit.charAt(0).toUpperCase() + unit.slice(1);
-      }
-      html += `<span style="color:#16a34a;">${unit}</span>`;
-      i += len;
-    } else {
-      let ch = word[i];
-      if (i === 0) ch = ch.toUpperCase();
-      html += ch;
-      i += 1;
-    }
-  }
-  return html;
-}
-
-/* --------- Neues Wort erzeugen --------- */
-function newWord() {
-  freeze = false;
-  feedback.textContent = "";
-  feedback.className   = "feedback";
-
-  currentWord  = pickRandomWord();
-  const segments = segmentWord(currentWord);
-
-  // Einen Laut (Segment) als Lücke auswählen
-  const seg = segments[Math.floor(Math.random() * segments.length)];
-  missingStart = seg.start;
-  missingLen   = seg.len;
-  correctUnit  = seg.text;
-
-  // Wort mit Lücke anzeigen
-  const display = buildDisplayWithGap(currentWord, missingStart, missingLen);
-  wordDisplay.textContent = display;
-
-  // Wort vorlesen (mit Großbuchstabe)
-  const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
-  speak(spoken);
-
-  generateLetterButtons();
-}
-
-/* --------- Buchstaben-/Laut-Auswahl erzeugen --------- */
-function generateLetterButtons() {
+/* Buttons rendern */
+function renderButtons(zipped){
   lettersDiv.innerHTML = "";
-
-  let options = [correctUnit];
-
-  // Fülle mit zufälligen Einheiten auf (Einzelbuchstabe oder Diphthong)
-  while (options.length < 6) {
-    const unit = LETTER_UNITS[Math.floor(Math.random() * LETTER_UNITS.length)];
-    if (!options.includes(unit)) {
-      options.push(unit);
-    }
-  }
-
-  // mischen
-  options.sort(() => Math.random() - 0.5);
-
-  options.forEach(unit => {
+  zipped.forEach(obj=>{
     const btn = document.createElement("button");
     btn.className = "letter-btn";
-    btn.textContent = unit;
+    btn.textContent = obj.shown;
+    btn.dataset.raw = obj.raw;
     btn.onclick = () => {
       if (freeze) return;
-      handleChoice(unit, btn);
+      handleChoice(obj.raw, btn);
     };
     lettersDiv.appendChild(btn);
   });
 }
 
-/* --------- Eingabe behandeln --------- */
-function handleChoice(unit, btn) {
-  if (unit === correctUnit) {
-    correctCount++;
-    feedback.textContent = "Richtig! 👍 Lies das Wort.";
-    feedback.classList.add("ok");
+/* =========================
+   STARTSCREEN
+   ========================= */
+modeGrid.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const m = btn.dataset.mode;
+    mode = (mode === m) ? null : m;
+    modeGrid.querySelectorAll(".mode-btn").forEach(b=>{
+      b.classList.toggle("selected", b.dataset.mode === mode);
+    });
+    updateStartState();
+  });
+});
 
-    // Alle Buttons deaktivieren während der Lese-Pause
-    freezeButtons();
+function updateStartState(){
+  if(!mode){
+    startInfo.textContent = "Bitte wähle einen Modus.";
+    startBtn.disabled = true;
+    return;
+  }
+  const map = {
+    start: "Du errätst nur den Anfangsbuchstaben. (3 Buttons)",
+    end:   "Du errätst nur den Endbuchstaben. (3 Buttons)",
+    vowel: "Du ergänzt einen fehlenden Vokal. (a/e/i/o/u)",
+    cons:  "Du ergänzt einen fehlenden Konsonanten.",
+    diph:  "Du ergänzt den Diphthong: au / ei / eu."
+  };
+  startInfo.textContent = map[mode] || "Modus gewählt.";
+  startBtn.disabled = false;
+}
 
-    // Vollständiges Wort mit grünem Laut anzeigen
-    const html = buildDisplayWithHighlight(currentWord, missingStart, missingLen);
-    wordDisplay.innerHTML = html;
+startBtn.addEventListener("click", ()=>{
+  correctCount = 0;
+  finishBtn.classList.add("hidden");
+  feedback.textContent = "";
+  feedback.className = "feedback";
+  stats.textContent = `Richtige Wörter: 0 / ${TARGET_CORRECT}`;
 
-    // Wort nochmal vorlesen
-    const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
-    speak(spoken);
+  startScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  nextItem();
+});
 
-    freeze = true;
+/* =========================
+   AUFGABEN GENERIEREN
+   ========================= */
 
-    if (correctCount >= TARGET) {
-      // Letztes Wort noch 5 Sekunden lesen lassen, dann Spielende
-      setTimeout(() => {
-        endGame();
-      }, 5000);
-    } else {
-      // 5 Sekunden Lesepause, dann neues Wort
-      setTimeout(() => {
-        newWord();
-      }, 5000);
-    }
+function pickCore(){
+  return WORDS_CORE[randInt(0, WORDS_CORE.length-1)];
+}
 
-  } else {
-    // falscher Laut → Button verschwindet
-    btn.remove();
+function pickDiph(){
+  return WORDS_DIPH[randInt(0, WORDS_DIPH.length-1)];
+}
+
+/* Wähle passenden Index für Vokal/Konsonant */
+function pickIndexFor(word, want){
+  const base = word.toLowerCase();
+  const idxs = [];
+  for(let i=0;i<base.length;i++){
+    const ch = base[i];
+    if (want === "vowel" && isVowel(ch)) idxs.push(i);
+    if (want === "cons"  && isConsonant(ch)) idxs.push(i);
+  }
+  if(idxs.length === 0) return -1;
+  return idxs[randInt(0, idxs.length-1)];
+}
+
+/* Nächste Aufgabe */
+function nextItem(){
+  freeze = false;
+  feedback.textContent = "";
+  feedback.className = "feedback";
+
+  let item;
+  if (mode === "diph"){
+    item = pickDiph();
+    const word = item.w;
+    const pos = item.pos;
+    const target = item.diph; // "au"/"ei"/"eu"
+    const lower = word.toLowerCase();
+    const index = lower.indexOf(target);
+    if(index < 0){ return nextItem(); }
+
+    current = {
+      word, pos,
+      target,
+      index,
+      len: 2,
+      template: makeTemplate(word,pos,index,2),
+      spoken: displayWordBase(word,pos)
+    };
+
+    wordDisplay.textContent = current.template;
+    patternInfo.textContent = "Wähle den richtigen Diphthong (au / ei / eu).";
+
+    speak(current.spoken);
+    const zipped = make3Options(target, "diph", false);
+    renderButtons(zipped);
+    return;
+  }
+
+  // Modi 1–4: aus CORE
+  item = pickCore();
+  const word = item.w;
+  const pos = item.pos;
+  const lower = word.toLowerCase();
+
+  if (mode === "start"){
+    const target = lower[0];
+    current = {
+      word, pos, target, index:0, len:1,
+      template: makeTemplate(word,pos,0,1),
+      spoken: displayWordBase(word,pos)
+    };
+    wordDisplay.textContent = current.template;
+    patternInfo.textContent = "Wähle den Anfangsbuchstaben.";
+    speak(current.spoken);
+
+    const nounUpper = (pos === "N"); // Buttons groß bei Nomen
+    const zipped = make3Options(target, "letter", nounUpper);
+    renderButtons(zipped);
+    return;
+  }
+
+  if (mode === "end"){
+    const index = lower.length - 1;
+    const target = lower[index];
+    current = {
+      word, pos, target, index, len:1,
+      template: makeTemplate(word,pos,index,1),
+      spoken: displayWordBase(word,pos)
+    };
+    wordDisplay.textContent = current.template;
+    patternInfo.textContent = "Wähle den Endbuchstaben.";
+    speak(current.spoken);
+
+    const nounUpper = (pos === "N"); // Buttons groß bei Nomen
+    const zipped = make3Options(target, "letter", nounUpper);
+    renderButtons(zipped);
+    return;
+  }
+
+  if (mode === "vowel"){
+    const index = pickIndexFor(word, "vowel");
+    if(index < 0) return nextItem();
+    const target = lower[index];
+
+    current = {
+      word, pos, target, index, len:1,
+      template: makeTemplate(word,pos,index,1),
+      spoken: displayWordBase(word,pos)
+    };
+    wordDisplay.textContent = current.template;
+    patternInfo.textContent = "Wähle den richtigen Vokal.";
+    speak(current.spoken);
+
+    const zipped = make3Options(target, "vowel", false);
+    renderButtons(zipped);
+    return;
+  }
+
+  if (mode === "cons"){
+    const index = pickIndexFor(word, "cons");
+    if(index < 0) return nextItem();
+    const target = lower[index];
+
+    current = {
+      word, pos, target, index, len:1,
+      template: makeTemplate(word,pos,index,1),
+      spoken: displayWordBase(word,pos)
+    };
+    wordDisplay.textContent = current.template;
+    patternInfo.textContent = "Wähle den richtigen Konsonanten.";
+    speak(current.spoken);
+
+    const zipped = make3Options(target, "cons", false);
+    renderButtons(zipped);
+    return;
   }
 }
 
-function freezeButtons() {
-  const all = lettersDiv.querySelectorAll("button");
-  all.forEach(b => b.disabled = true);
+/* =========================
+   ANTWORT-LOGIK
+   ========================= */
+function handleChoice(chosen, btn){
+  if(!current || freeze) return;
+
+  if(chosen === current.target){
+    correctCount++;
+    freeze = true;
+
+    feedback.textContent = "Richtig! 👍 Lies das Wort.";
+    feedback.classList.add("ok");
+
+    // Buttons sperren
+    Array.from(lettersDiv.querySelectorAll("button")).forEach(b=>b.disabled=true);
+
+    // Grün einblenden
+    wordDisplay.innerHTML = highlightAt(current.word, current.pos, current.index, current.len);
+
+    // Wort nochmal vorlesen
+    speak(current.spoken);
+
+    stats.textContent = `Richtige Wörter: ${correctCount} / ${TARGET_CORRECT}`;
+
+    if(correctCount >= TARGET_CORRECT){
+      setTimeout(()=> endGame(), 5000);
+    }else{
+      setTimeout(()=> nextItem(), 5000);
+    }
+  }else{
+    // falscher Button verschwindet
+    btn.remove();
+    feedback.textContent = "Versuch es noch einmal.";
+    feedback.classList.remove("ok");
+    feedback.classList.add("err");
+  }
 }
 
-/* --------- Spielende --------- */
-function endGame() {
-  wordDisplay.textContent = "Super gemacht!";
-  lettersDiv.innerHTML = "";
-  speak("Sehr gut! Du hast viele Wörter richtig gehört und gelesen.");
-  finishBtn.classList.remove("hidden");
+/* =========================
+   SPIELENDE + LEARNINGVIEW
+   ========================= */
+function endGame(){
+  feedback.textContent = "Super gemacht! 🎉";
+  feedback.classList.remove("err");
+  feedback.classList.add("ok");
 
-  finishBtn.onclick = () => {
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage("AppSolved", "*");
-      }
-    } catch (e) {}
-    finishBtn.textContent = "Erledigt ✔";
+  lettersDiv.innerHTML = "";
+  patternInfo.textContent = "";
+  wordDisplay.textContent = "Toll gearbeitet!";
+
+  finishBtn.classList.remove("hidden");
+  finishBtn.disabled = false;
+  finishBtn.textContent = "Fertig ✔";
+
+  finishBtn.onclick = ()=>{
     finishBtn.disabled = true;
+    finishBtn.textContent = "Erledigt ✔";
+    try{
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage("AppSolved","*");
+      }
+    }catch(e){
+      console.warn("LearningView-AppSolved nicht möglich:", e);
+    }
   };
 }
 
-/* --------- Buttons --------- */
-speakBtn.onclick = () => {
-  if (!currentWord || freeze) return;
-  const spoken = currentWord.charAt(0).toUpperCase() + currentWord.slice(1);
-  speak(spoken);
+/* =========================
+   NOCHMAL HÖREN
+   ========================= */
+speakBtn.onclick = ()=>{
+  if(!current) return;
+  speak(current.spoken);
 };
-
-/* --------- Start --------- */
-newWord();
 </script>
-
 </body>
 </html>
